@@ -1,46 +1,68 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Админ панель</title>
-    <link rel="stylesheet" href="style.css">
-    <script defer src="admin.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Админ — Сломанные судьбы</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="admin.js"></script>
 </head>
 <body>
-    <div class="overlay"></div>
+  <div class="bg-overlay"></div>
 
-    <header>
-        <h1 class="glow">Админ панель</h1>
-        <a href="index.html" class="admin-link">Назад</a>
-    </header>
+  <header>
+    <h1 class="site-title">Админ панель</h1>
+    <a class="admin-link" href="index.html">Назад</a>
+  </header>
 
-    <section id="login-box">
-        <h2>Введите пароль</h2>
-        <input type="password" id="pass" placeholder="Пароль">
-        <button onclick="checkPass()">Войти</button>
-        <p id="error"></p>
+  <main>
+    <section id="login-box" class="panel">
+      <h2>Введите пароль</h2>
+      <input id="pass" type="password" placeholder="Пароль">
+      <div>
+        <button id="loginBtn">Войти</button>
+      </div>
+      <p id="error" class="error"></p>
     </section>
 
-    <section id="panel" class="hidden">
-        <h2>Добавить эпизод</h2>
+    <section id="panel" class="panel hidden">
+      <h2>Управление эпизодами</h2>
 
-        <label>Сезон:</label>
+      <div class="form-row">
+        <label>Сезон</label>
         <select id="season">
-            <option value="1">Сезон 1</option>
-            <option value="2">Сезон 2</option>
+          <option value="1">Сезон 1</option>
+          <option value="2">Сезон 2</option>
         </select>
+      </div>
 
-        <label>Название эпизода:</label>
-        <input type="text" id="title">
+      <div class="form-row">
+        <label>Название эпизода</label>
+        <input id="title" type="text" placeholder="Название">
+      </div>
 
-        <label>Текст эпизода:</label>
-        <textarea id="content" rows="10"></textarea>
+      <div class="form-row">
+        <label>Текст эпизода</label>
+        <textarea id="content" rows="10" placeholder="Полный текст серии"></textarea>
+      </div>
 
-        <button onclick="addEpisode()">Добавить</button>
+      <div class="form-row">
+        <button id="addBtn">Добавить/Сохранить</button>
+        <button id="clearBtn">Очистить поля</button>
+      </div>
 
-        <h2>Существующие серии</h2>
-        <ul id="episodes-list"></ul>
+      <h3>Существующие серии</h3>
+      <ul id="episodes-list" class="admin-list"></ul>
+
+      <div class="form-row">
+        <button id="exportAdmin">Экспортировать JSON</button>
+        <input id="importAdminInput" type="file" accept=".json" style="display:none">
+        <button id="importAdmin">Импортировать JSON</button>
+        <button id="wipeData" class="danger">Удалить все данные (сброс)</button>
+      </div>
+
+      <p class="hint">Пароль для админа: <b>Ster4728</b></p>
     </section>
-
+  </main>
 </body>
 </html>
