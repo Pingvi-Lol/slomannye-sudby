@@ -1,75 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Сломанные судьбы — сезоны</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Сломанные судьбы</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <h1>Сломанные судьбы</h1>
-    <nav>
-      <a href="index.html">Сезоны</a>
-      <a href="admin.html">Админ</a>
-    </nav>
-  </header>
+    <div class="overlay"></div>
 
-  <main class="container">
-    <h2 class="section-title">Выберите сезон</h2>
-    <div id="seasonsGrid" class="seasons-grid"></div>
-    <p class="muted">Сезоны 3 и 4 закрыты пока что</p>
-  </main>
+    <header>
+        <h1 class="glow">Сломанные судьбы</h1>
+        <a href="admin.html" class="admin-link">Админ</a>
+    </header>
 
-<script>
-const LOCAL_KEY = 'slomannye_seasons_v1';
-const DEFAULT_JSON = 'seasons.json';
+    <section class="seasons-box">
+        <h2>Выберите сезон</h2>
 
-function showLockedNotice(){
-  alert('Сезон недоступен. Он выйдет позже.');
-}
+        <div class="season" data-season="1">
+            <h3>Сезон 1 — Сломанные судьбы</h3>
+            <p id="count-s1">Эпизодов: 0</p>
+            <button class="open-btn" onclick="openSeason(1)">Открыть</button>
+        </div>
 
-async function loadData(){
-  // сначала пробуем localStorage
-  const raw = localStorage.getItem(LOCAL_KEY);
-  if(raw){
-    try{ return JSON.parse(raw); }catch(e){}
-  }
-  // если нет localStorage пробуем загрузить файл
-  try{
-    const res = await fetch(DEFAULT_JSON);
-    if(res.ok){
-      const json = await res.json();
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(json));
-      return json;
-    }
-  }catch(e){}
-  // пустая структура
-  return { seasons: [] };
-}
+        <div class="season" data-season="2">
+            <h3>Сезон 2 — Раскрытие тайн</h3>
+            <p id="count-s2">Эпизодов: 0</p>
+            <button class="open-btn" onclick="openSeason(2)">Открыть</button>
+        </div>
 
-function createSeasonCard(s, idx){
-  const div = document.createElement('div');
-  div.className = 'season-card';
-  div.innerHTML = `
-    <h3>${s.title}</h3>
-    <p class="season-meta">Сезон ${idx+1} • эпизодов ${ (s.episodes||[]).length }</p>
-    <div class="season-actions">
-      <a class="btn" href="season.html?i=${idx}" ${s.locked? 'onclick="event.preventDefault();showLockedNotice();"' : ''}>Открыть</a>
-    </div>
-    ${s.locked ? '<div class="lock">🔒 Закрыт</div>' : ''}
-  `;
-  return div;
-}
+        <div class="season locked">
+            <h3>Сезон 3 — Недоступен 🔒</h3>
+        </div>
 
-(async function init(){
-  const data = await loadData();
-  const grid = document.getElementById('seasonsGrid');
-  grid.innerHTML = '';
-  (data.seasons || []).forEach((s, i)=>{
-    grid.appendChild(createSeasonCard(s,i));
-  });
-})();
-</script>
+        <div class="season locked">
+            <h3>Сезон 4 — Недоступен 🔒</h3>
+        </div>
+    </section>
+
+    <section id="episodes" class="episodes hidden">
+        <h2 id="season-title"></h2>
+        <ul id="episode-list"></ul>
+        <button class="back-btn" onclick="goBack()">Назад</button>
+    </section>
+
 </body>
 </html>
