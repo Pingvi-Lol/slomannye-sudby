@@ -1,122 +1,120 @@
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background: black;
-    color: #00ff88;
+:root{
+  --neon: #00ff66;
+  --bg: #020202;
+  --panel: rgba(0,0,0,0.6);
+  --glass: rgba(0,255,102,0.06);
 }
 
-/* Анимированный огонь на фоне */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('fire.gif') center/cover no-repeat;
-    opacity: 0.18;
-    pointer-events: none;
+* { box-sizing: border-box; }
+body{
+  margin:0;
+  font-family: Inter, Arial, sans-serif;
+  background: linear-gradient(180deg, #050505 0%, #070707 100%);
+  color: var(--neon);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* Неоновый заголовок */
-h1.glow {
-    text-align: center;
-    color: #00ff88;
-    text-shadow: 0 0 10px #00ff88, 0 0 25px #00ff88;
-    margin-top: 20px;
+.bg-overlay{
+  position: fixed;
+  inset:0;
+  z-index:-1;
+  background: url('fire.gif') center/cover no-repeat;
+  opacity: 0.12;
 }
 
-/* Админ кнопка */
-.admin-link {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    color: #00ff88;
-    text-decoration: none;
-    font-size: 20px;
+/* header */
+header{
+  padding:18px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.site-title{
+  margin:0;
+  font-size:26px;
+  text-shadow: 0 0 10px var(--neon);
+}
+.admin-link{
+  color:var(--neon);
+  text-decoration:none;
+  border:1px solid var(--neon);
+  padding:8px 12px;
+  border-radius:8px;
+  backdrop-filter: blur(4px);
+}
+.admin-link:hover{ background:var(--glass); color:#000; box-shadow:0 0 14px var(--neon); }
+
+/* main layout */
+main{ padding: 18px; max-width:1000px; margin:0 auto; }
+
+.seasons-box{ margin-top:20px; display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+.season{
+  padding:14px;
+  border-radius:10px;
+  background:var(--panel);
+  border:1px solid rgba(0,255,102,0.12);
+}
+.season h3{ margin:0 0 6px 0; color:var(--neon); }
+.open-btn{
+  margin-top:10px;
+  background:#000;
+  color:var(--neon);
+  border:1px solid var(--neon);
+  padding:8px 10px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.locked{ opacity:0.45; filter:grayscale(0.2); }
+
+/* episodes view */
+.episodes{ margin-top:24px; }
+.hidden{ display:none; }
+.episode-list{ padding:0; margin:0; }
+.episode-list li{ list-style:none; margin-bottom:18px; }
+
+.episode-block{
+  background: rgba(0,0,0,0.55);
+  border:1px solid rgba(0,255,102,0.06);
+  padding:16px;
+  border-radius:10px;
+}
+.episode-block h3{ margin:0 0 8px 0; font-size:18px; color:var(--neon); }
+.episode-text{
+  color:#CFFFE1;
+  line-height:1.45;
+  font-size:16px;
+  white-space:normal;
 }
 
-.seasons-box {
-    width: 80%;
-    margin: 0 auto;
-    margin-top: 50px;
-    padding: 20px;
+/* controls */
+.actions{ display:flex; gap:10px; margin-top:14px; align-items:center; }
+.back-btn, .export-btn{
+  background:#000;
+  color:var(--neon);
+  border:1px solid var(--neon);
+  padding:8px 10px;
+  border-radius:8px;
+  cursor:pointer;
 }
 
-.season {
-    border: 2px solid #00ff88;
-    padding: 15px;
-    margin-bottom: 25px;
-    border-radius: 10px;
-    background: rgba(0, 255, 100, 0.1);
+/* admin */
+.panel{ max-width:900px; margin:16px auto; background:var(--panel); padding:16px; border-radius:10px; border:1px solid rgba(0,255,102,0.06); }
+.form-row{ margin-bottom:12px; display:flex; gap:10px; align-items:center; }
+.form-row label{ width:160px; color:var(--neon); font-weight:600; }
+input[type=text], textarea, select, input[type=password]{
+  flex:1;
+  background:#000;
+  color:var(--neon);
+  border:1px solid rgba(0,255,102,0.08);
+  padding:8px; border-radius:6px;
 }
+button{ cursor:pointer; }
+.admin-list{ padding-left:0; margin-top:8px; }
+.admin-list li{ list-style:none; padding:8px; border-bottom:1px dashed rgba(0,255,102,0.04); display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.admin-list .small-btn{ background:#000; color:var(--neon); border:1px solid rgba(0,255,102,0.08); padding:6px 8px; border-radius:6px; }
+.danger{ background:transparent; border:1px solid rgba(255,50,50,0.18); color:#ff7777; }
 
-.season.locked {
-    opacity: 0.4;
-    border-color: gray;
-}
-
-.open-btn {
-    margin-top: 10px;
-    background: black;
-    border: 2px solid #00ff88;
-    color: #00ff88;
-    padding: 10px 15px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.open-btn:hover {
-    box-shadow: 0 0 15px #00ff88;
-}
-
-/* Список эпизодов */
-#episodes {
-    width: 80%;
-    margin: 40px auto;
-}
-
-.episodes.hidden {
-    display: none;
-}
-
-#episode-list li {
-    list-style: none;
-}
-
-/* Блок серии */
-.episode-box {
-    background: rgba(0, 255, 100, 0.1);
-    border: 1px solid #00ff88;
-    padding: 20px;
-    margin-bottom: 25px;
-    border-radius: 10px;
-}
-
-/* Текст серии */
-.episode-text {
-    white-space: normal;
-    margin-top: 10px;
-    font-size: 18px;
-    line-height: 1.5;
-}
-
-/* Назад */
-.back-btn {
-    margin-top: 20px;
-    background: black;
-    border: 2px solid #00ff66;
-    color: #00ff66;
-    padding: 10px 15px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.back-btn:hover {
-    box-shadow: 0 0 15px #00ff66;
-}
-
-/* Скрытие */
-.hidden {
-    display: none;
-}
+.error{ color:#ff7777; }
+.hint{ color:#9fffbf; font-size:13px; margin-top:8px; }
+footer{ text-align:center; padding:20px 0; color:rgba(0,255,102,0.5); }
