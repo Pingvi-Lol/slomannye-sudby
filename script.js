@@ -4,8 +4,15 @@ async function loadEpisodes() {
     let res = await fetch("episodes.json");
     data = await res.json();
 
-    document.getElementById("count-s1").textContent = "Эпизодов: " + data["1"].length;
-    document.getElementById("count-s2").textContent = "Эпизодов: " + data["2"].length;
+    // количество серий
+    document.getElementById("count-s1").textContent =
+        "Эпизодов: " + data.seasons["1"].episodes.length;
+
+    // если хочешь — 2 сезона (можно удалить)
+    if (data.seasons["2"]) {
+        document.getElementById("count-s2").textContent =
+            "Эпизодов: " + data.seasons["2"].episodes.length;
+    }
 }
 
 loadEpisodes();
@@ -17,11 +24,16 @@ function openSeason(season) {
     let list = document.getElementById("episode-list");
     list.innerHTML = "";
 
-    document.getElementById("season-title").textContent = "Сезон " + season;
+    document.getElementById("season-title").textContent =
+        "Сезон " + season + " — " + data.seasons[season].title;
 
-    data[season].forEach((ep, i) => {
+    // ЗАГРУЖАЕМ ВСЕ ЭПИЗОДЫ
+    data.seasons[season].episodes.forEach((ep, i) => {
         let li = document.createElement("li");
-        li.innerHTML = `<b>${ep.title}</b><br><pre>${ep.content}</pre>`;
+        li.innerHTML = `
+            <h3>${ep.title}</h3>
+            <pre>${ep.content}</pre>
+        `;
         list.appendChild(li);
     });
 }
