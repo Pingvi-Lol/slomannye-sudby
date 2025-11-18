@@ -1,45 +1,54 @@
-body {
-    background: #0e0e0e;
-    color: white;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+:root{
+  --bg:#070707;
+  --panel: rgba(18,18,18,0.9);
+  --accent:#b71c1c;
+  --muted:#9a9a9a;
 }
-
-header {
-    background: linear-gradient(#550000, #0e0e0e);
-    padding: 20px;
-    text-align: center;
-    border-bottom: 2px solid #330000;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;
+  background: var(--bg) url('') no-repeat center top;
+  color:#eee;
+  min-height:100vh;
 }
-
-.subtitle {
-    opacity: 0.8;
-    margin-top: -10px;
+.site-header{
+  padding:18px 20px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.3));
+  border-bottom:2px solid rgba(150,10,10,0.15);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
 }
+.site-header h1{ color:var(--accent); margin:0; font-size:20px; text-transform:uppercase;}
+.site-header nav a{ color:#bbb; margin-left:12px; text-decoration:none;}
+.container{ max-width:1100px; margin:30px auto;padding:0 16px;}
+.section-title{ font-size:22px; margin-bottom:14px; color:var(--accent); }
+.seasons-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+.season-card{ background: var(--panel); padding:16px; border-radius:8px; position:relative; border:1px solid rgba(255,0,0,0.06); }
+.season-card h3{ margin:0 0 6px 0; color:#fff; }
+.season-meta{ color:var(--muted); font-size:13px; margin-bottom:10px;}
+.season-actions{ margin-top:8px; }
+.lock{ position:absolute; right:10px; top:10px; color:var(--muted); font-size:14px; }
 
-.episode {
-    background: #1a1a1a;
-    margin: 15px;
-    padding: 15px;
-    border: 1px solid #550000;
-    border-radius: 10px;
-}
+.episodes-list .episode{ background: rgba(0,0,0,0.35); margin-bottom:12px; padding:12px; border-radius:6px; border-left:4px solid var(--accent);}
+.episodes-list .episode h3{ margin:0; color:var(--accent); }
+.desc{ color:var(--muted); margin:8px 0; }
 
-button {
-    background: #550000;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin-top: 10px;
-    cursor: pointer;
-}
+.btn{ background:var(--accent); border:none; color:#fff; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.btn:hover{ filter:brightness(1.05); }
+.muted{ color:var(--muted); }
 
-button:hover {
-    background: #770000;
-}
+.panel{ background: rgba(20,20,20,0.92); padding:16px; border-radius:8px; margin-bottom:16px; }
 
-#login, #panel {
-    margin: 20px;
-}
+.hidden{ display:none; }
 
+.modal{ position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:50;}
+.modal-content{ background:#121212; padding:18px; border-radius:8px; width:90%; max-width:820px; }
+.reader-body{ max-height:60vh; overflow:auto; color:#ddd; line-height:1.6; white-space:pre-wrap; }
+
+.season-admin{ background: rgba(0,0,0,0.25); padding:12px; margin-bottom:12px; border-radius:6px; }
+.ep-admin{ background: rgba(0,0,0,0.18); padding:10px; margin-bottom:10px; border-radius:6px; }
+.ep-admin label{ display:block; margin-bottom:8px; color:#ddd; font-size:13px;}
+.ep-admin input[type="text"], .ep-admin textarea{ width:100%; padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); background:#111; color:#ddd; }
+.admin-controls-row{ margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap; }
