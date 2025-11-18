@@ -1,100 +1,122 @@
 body {
     margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
-    background: #000;
-    color: #0f0;
-    overflow-x: hidden;
+    background: black;
+    color: #00ff88;
 }
 
-/* 🔥 Фон огня */
+/* Анимированный огонь на фоне */
 .overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('https://i.ibb.co/6yHQtZK/fire.gif') center/cover no-repeat;
-    opacity: 0.15;
-    z-index: -1;
+    background: url('fire.gif') center/cover no-repeat;
+    opacity: 0.18;
+    pointer-events: none;
 }
 
-/* Неоновое свечение */
-.glow {
-    text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+/* Неоновый заголовок */
+h1.glow {
+    text-align: center;
+    color: #00ff88;
+    text-shadow: 0 0 10px #00ff88, 0 0 25px #00ff88;
+    margin-top: 20px;
 }
 
-header {
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-}
-
+/* Админ кнопка */
 .admin-link {
-    color: #0f0;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: #00ff88;
     text-decoration: none;
     font-size: 20px;
 }
 
 .seasons-box {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 50px;
     padding: 20px;
 }
 
 .season {
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid #0f0;
+    border: 2px solid #00ff88;
     padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 8px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    background: rgba(0, 255, 100, 0.1);
 }
 
-.locked {
-    opacity: 0.7;
+.season.locked {
+    opacity: 0.4;
+    border-color: gray;
 }
 
-.open-btn, .back-btn, button {
-    padding: 10px;
+.open-btn {
+    margin-top: 10px;
     background: black;
-    color: #0f0;
-    border: 1px solid #0f0;
-    border-radius: 5px;
-}
-
-.open-btn:hover, .back-btn:hover, button:hover {
-    background: #0f0;
-    color: black;
+    border: 2px solid #00ff88;
+    color: #00ff88;
+    padding: 10px 15px;
+    border-radius: 10px;
     cursor: pointer;
 }
 
-.hidden {
+.open-btn:hover {
+    box-shadow: 0 0 15px #00ff88;
+}
+
+/* Список эпизодов */
+#episodes {
+    width: 80%;
+    margin: 40px auto;
+}
+
+.episodes.hidden {
     display: none;
 }
 
-textarea, input, select {
-    width: 100%;
-    background: #000;
-    color: #0f0;
-    border: 1px solid #0f0;
-    padding: 8px;
-    margin-bottom: 10px;
+#episode-list li {
+    list-style: none;
 }
 
-#episodes {
-    padding: 20px;
-    }
-
-}
-.episode-text {
-    white-space: normal;
-    font-size: 18px;
-    line-height: 1.5;
-    margin-top: 10px;
-}
-
+/* Блок серии */
 .episode-box {
     background: rgba(0, 255, 100, 0.1);
-    border: 1px solid #00ff66;
-    padding: 15px;
-    margin-bottom: 20px;
+    border: 1px solid #00ff88;
+    padding: 20px;
+    margin-bottom: 25px;
     border-radius: 10px;
 }
 
+/* Текст серии */
+.episode-text {
+    white-space: normal;
+    margin-top: 10px;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+/* Назад */
+.back-btn {
+    margin-top: 20px;
+    background: black;
+    border: 2px solid #00ff66;
+    color: #00ff66;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    box-shadow: 0 0 15px #00ff66;
+}
+
+/* Скрытие */
+.hidden {
+    display: none;
+}
