@@ -1,15 +1,16 @@
 let data = {};
 
 async function loadEpisodes() {
-    const res = await fetch("episodes.json");
-    data = await res.json();
+    try {
+        let res = await fetch("episodes.json");
+        data = await res.json();
 
-    // считаем количество эпизодов
-    document.getElementById("count-s1").textContent =
-        "Эпизодов: " + data.seasons["1"].episodes.length;
-
-    document.getElementById("count-s2").textContent =
-        "Эпизодов: " + data.seasons["2"].episodes.length;
+        // Обновляем количество серий
+        document.getElementById("count-s1").textContent = "Эпизодов: " + (data["1"]?.length || 0);
+        document.getElementById("count-s2").textContent = "Эпизодов: " + (data["2"]?.length || 0);
+    } catch (err) {
+        console.error("Ошибка загрузки episodes.json:", err);
+    }
 }
 
 loadEpisodes();
@@ -18,18 +19,29 @@ function openSeason(season) {
     document.querySelector(".seasons-box").classList.add("hidden");
     document.getElementById("episodes").classList.remove("hidden");
 
-    document.getElementById("season-title").textContent =
-        "Сезон " + season + " — " + data.seasons[season].title;
-
     let list = document.getElementById("episode-list");
     list.innerHTML = "";
 
-    data.seasons[season].episodes.forEach(ep => {
+    document.getElementById("season-title").textContent = "Сезон " + season;
+
+    // Если сезон пустой — покажем заглушку
+    if (!data[season] || data[season].length === 0) {
+        list.innerHTML = `<p style="color:gray">В этом сезоне пока нет серий.</p>`;
+        return;
+    }
+
+    // Добавляем серии
+    data[season].forEach(ep => {
         let li = document.createElement("li");
+        li.classList.add("episode-box");
+
         li.innerHTML = `
             <h3>${ep.title}</h3>
-            <pre>${ep.content}</pre>
+            <div class="episode-text">
+                ${ep.content.replace(/\n/g, "<br>")}
+            </div>
         `;
+
         list.appendChild(li);
     });
 }
