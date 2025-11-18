@@ -1,26 +1,22 @@
 let data = {};
 
-// загрузка эпизодов
 async function loadEpisodes() {
-    try {
-        let res = await fetch("episodes.json");
-        data = await res.json();
+    let res = await fetch("episodes.json");
+    data = await res.json();
 
-        document.getElementById("count-s1").textContent =
-            "Эпизодов: " + (data["1"] ? data["1"].length : 0);
+    // Получаем сезоны
+    let s1 = data.seasons["1"].episodes.length;
+    let s2 = data.seasons["2"].episodes.length;
 
-        document.getElementById("count-s2").textContent =
-            "Эпизодов: " + (data["2"] ? data["2"].length : 0);
-
-    } catch (e) {
-        console.error("Ошибка загрузки episodes.json", e);
-    }
+    document.getElementById("count-s1").textContent = "Эпизодов: " + s1;
+    document.getElementById("count-s2").textContent = "Эпизодов: " + s2;
 }
 
 loadEpisodes();
 
-// открыть сезон
 function openSeason(season) {
+    let seasonData = data.seasons[season];
+
     document.querySelector(".seasons-box").classList.add("hidden");
     document.getElementById("episodes").classList.remove("hidden");
 
@@ -29,25 +25,14 @@ function openSeason(season) {
 
     document.getElementById("season-title").textContent = "Сезон " + season;
 
-    if (!data[season]) return;
-
-    data[season].forEach((ep, i) => {
+    seasonData.episodes.forEach(ep => {
         let li = document.createElement("li");
-
-        li.innerHTML = `
-            <div class="episode-block">
-                <h3>${ep.title}</h3>
-                <div class="episode-text">${ep.content.replace(/\n/g, "<br>")}</div>
-            </div>
-        `;
-
+        li.innerHTML = `<b>${ep.title}</b><br><pre>${ep.content}</pre>`;
         list.appendChild(li);
     });
 }
 
-// назад
 function goBack() {
     document.querySelector(".seasons-box").classList.remove("hidden");
     document.getElementById("episodes").classList.add("hidden");
 }
-
