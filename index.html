@@ -1,48 +1,59 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Сломанные судьбы</title>
-    <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Сломанные судьбы</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
-    <div class="overlay"></div>
+  <div class="bg-overlay"></div>
 
-    <header>
-        <h1 class="glow">Сломанные судьбы</h1>
-        <a href="admin.html" class="admin-link">Админ</a>
-    </header>
+  <header>
+    <h1 class="site-title">Сломанные судьбы</h1>
+    <a class="admin-link" href="admin.html">Админ</a>
+  </header>
 
+  <main>
     <section class="seasons-box">
-        <h2>Выберите сезон</h2>
+      <h2>Выберите сезон</h2>
 
-        <div class="season" data-season="1">
-            <h3>Сезон 1 — Сломанные судьбы</h3>
-            <p id="count-s1">Эпизодов: 0</p>
-            <button class="open-btn" onclick="openSeason(1)">Открыть</button>
-        </div>
+      <div class="season" data-season="1">
+        <h3>Сезон 1 — Сломанные судьбы</h3>
+        <p id="count-s1">Эпизодов: 0</p>
+        <button class="open-btn" data-season="1">Открыть</button>
+      </div>
 
-        <div class="season" data-season="2">
-            <h3>Сезон 2 — Раскрытие тайн</h3>
-            <p id="count-s2">Эпизодов: 0</p>
-            <button class="open-btn" onclick="openSeason(2)">Открыть</button>
-        </div>
+      <div class="season" data-season="2">
+        <h3>Сезон 2 — Раскрытие тайн</h3>
+        <p id="count-s2">Эпизодов: 0</p>
+        <button class="open-btn" data-season="2">Открыть</button>
+      </div>
 
-        <div class="season locked">
-            <h3>Сезон 3 — Недоступен 🔒</h3>
-        </div>
+      <div class="season locked">
+        <h3>Сезон 3 — Недоступен 🔒</h3>
+      </div>
 
-        <div class="season locked">
-            <h3>Сезон 4 — Недоступен 🔒</h3>
-        </div>
+      <div class="season locked">
+        <h3>Сезон 4 — Недоступен 🔒</h3>
+      </div>
     </section>
 
     <section id="episodes" class="episodes hidden">
-        <h2 id="season-title"></h2>
-        <ul id="episode-list"></ul>
-        <button class="back-btn" onclick="goBack()">Назад</button>
+      <h2 id="season-title"></h2>
+      <ul id="episode-list" class="episode-list"></ul>
+      <div class="actions">
+        <button class="back-btn">Назад</button>
+        <button id="exportBtn" class="export-btn">Экспорт JSON</button>
+        <input id="importFile" type="file" accept=".json" style="display:none">
+        <button id="importBtn" class="export-btn">Импорт JSON</button>
+      </div>
     </section>
+  </main>
 
+  <footer>
+    <small>Тёмная тема • Non-commercial fanfiction</small>
+  </footer>
 </body>
 </html>
