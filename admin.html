@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ | Сломанные судьбы</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header><h1>Админ панель</h1></header>
+
+<div id="login">
+    <h2>Вход</h2>
+    <input id="pass" type="password" placeholder="Пароль">
+    <button onclick="login()">Войти</button>
+</div>
+
+<div id="panel" style="display:none;">
+    <h2>Список серий</h2>
+    <div id="list"></div>
+
+    <h2>Добавить / редактировать серию</h2>
+    <input id="title" placeholder="Название серии"><br>
+    <textarea id="description" placeholder="Краткое описание"></textarea><br>
+    <textarea id="full" placeholder="Полный текст серии"></textarea><br>
+    <button onclick="saveEpisode()">Сохранить</button>
+</div>
+
+<script>
+const PASSWORD = "admin123";
+let episodes = [];
+let editingIndex = null;
+
+async function login() {
+    if (document.getElementById("pass").value === PASSWORD) {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("panel").style.display = "block";
+        loadEpisodes();
+    } else {
+        alert("Неверный пароль");
+    }
+}
+
+async function loadEpisodes() {
+    const response = await fetch("episodes.json");
+    episodes = await response.json();
+    renderList();
+}
+
+function renderList() {
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    episodes.forEach((ep, i) => {
+        const div = document.createElement("div");
+        div.className = "episode";
+
+        div.innerHTML = `
+            <strong>${ep.title}</strong>
+            <button onclick="editEpisode(${i})">Редактировать</button>
+            <button onclick="deleteEpisode(${i})">Удалить</button>
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+function editEpisode(i) {
+    editingIndex = i;
+    document.getElementById("title").value = episodes[i].title;
+    document.getElementById("description").value = episodes[i].description;
+    document.getElementById("full").value = episodes[i].full;
+}
+
+function deleteEpisode(i) {
+    if (!confirm("Удалить серию?")) return;
+    episodes.splice(i, 1);
+    saveToFile();
+}
+
+function saveEpisode() {
+    const ep = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        full: document.getElementById("full").value
+    };
+
+    if (editingIndex !== null) {
+        episodes[editingIndex] = ep;
+        editingIndex = null;
+    } else {
+        episodes.push(ep);
+    }
+
+    saveToFile();
+}
+
+function saveToFile() {
+    const data = JSON.stringify(episodes, null, 4);
+    const blob = new Blob([data], { type: "application/json" });
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "episodes.json";
+    a.click();
+
+    alert("Сохранено! Загрузите новый episodes.json на сайт");
+    renderList();
+}
+</script>
+
+</body>
+</html>
 
