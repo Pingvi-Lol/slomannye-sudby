@@ -1,114 +1,227 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Админ | Сломанные судьбы</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Админ — Сломанные судьбы</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <header class="site-header">
+    <h1>Админ панель</h1>
+    <nav>
+      <a href="index.html">Сезоны</a>
+      <a href="admin.html">Админ</a>
+    </nav>
+  </header>
 
-<header><h1>Админ панель</h1></header>
+  <main class="container">
+    <div id="loginBox" class="panel">
+      <h2>Вход администратора</h2>
+      <input id="pw" type="password" placeholder="Пароль" />
+      <button id="loginBtn" class="btn">Войти</button>
+      <p id="loginMsg" class="small muted"></p>
+    </div>
 
-<div id="login">
-    <h2>Вход</h2>
-    <input id="pass" type="password" placeholder="Пароль">
-    <button onclick="login()">Войти</button>
-</div>
+    <div id="adminUI" class="panel hidden">
+      <h2>Управление сезонами и сериями</h2>
 
-<div id="panel" style="display:none;">
-    <h2>Список серий</h2>
-    <div id="list"></div>
+      <div class="admin-controls-row">
+        <button id="addSeason" class="btn">Добавить сезон</button>
+        <button id="exportBtn" class="btn">Экспорт JSON</button>
+        <input id="importFile" type="file" style="display:none" />
+        <button id="importBtn" class="btn">Импорт JSON</button>
+        <button id="resetBtn" class="btn">Сброс localStorage</button>
+      </div>
 
-    <h2>Добавить / редактировать серию</h2>
-    <input id="title" placeholder="Название серии"><br>
-    <textarea id="description" placeholder="Краткое описание"></textarea><br>
-    <textarea id="full" placeholder="Полный текст серии"></textarea><br>
-    <button onclick="saveEpisode()">Сохранить</button>
-</div>
+      <div id="seasonsList"></div>
+    </div>
+  </main>
 
 <script>
-const PASSWORD = "admin123";
-let episodes = [];
-let editingIndex = null;
+const ADMIN_PASS = 'BrokenAdmin2024'; // изменяй если нужно
+const LOCAL_KEY = 'slomannye_seasons_v1';
+const DEFAULT_JSON = 'seasons.json';
 
-async function login() {
-    if (document.getElementById("pass").value === PASSWORD) {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-        loadEpisodes();
-    } else {
-        alert("Неверный пароль");
+function getLocal(){
+  try{ return JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}'); }catch(e){ return {}; }
+}
+function saveLocal(data){
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
+}
+
+async function ensureDefault(){
+  const cur = localStorage.getItem(LOCAL_KEY);
+  if(!cur){
+    try{
+      const res = await fetch(DEFAULT_JSON);
+      if(res.ok){
+        const json = await res.json();
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(json));
+      } else {
+        // default stub
+        localStorage.setItem(LOCAL_KEY, JSON.stringify({ seasons: [] }));
+      }
+    }catch(e){
+      localStorage.setItem(LOCAL_KEY, JSON.stringify({ seasons: [] }));
     }
+  }
 }
 
-async function loadEpisodes() {
-    const response = await fetch("episodes.json");
-    episodes = await response.json();
-    renderList();
-}
+function renderAdmin(){
+  const root = document.getElementById('seasonsList');
+  const data = getLocal();
+  const seasons = data.seasons || [];
+  root.innerHTML = '';
 
-function renderList() {
-    const list = document.getElementById("list");
-    list.innerHTML = "";
+  seasons.forEach((s, si)=>{
+    const box = document.createElement('div');
+    box.className = 'season-admin';
+    box.innerHTML = `
+      <h3>Сезон ${si+1} — <input class="s-title" data-si="${si}" value="${s.title||''}" /></h3>
+      <label>Locked <input type="checkbox" class="s-locked" data-si="${si}" ${s.locked? 'checked':''} /></label>
+      <div class="season-episodes" id="season-${si}"></div>
+      <div class="season-actions">
+        <button class="btn add-ep" data-si="${si}">Добавить серию</button>
+        <button class="btn del-season" data-si="${si}">Удалить сезон</button>
+      </div>
+      <hr/>
+    `;
+    root.appendChild(box);
 
-    episodes.forEach((ep, i) => {
-        const div = document.createElement("div");
-        div.className = "episode";
-
-        div.innerHTML = `
-            <strong>${ep.title}</strong>
-            <button onclick="editEpisode(${i})">Редактировать</button>
-            <button onclick="deleteEpisode(${i})">Удалить</button>
-        `;
-
-        list.appendChild(div);
+    const epRoot = box.querySelector('#season-'+si);
+    (s.episodes || []).forEach((ep, ei)=>{
+      const epDiv = document.createElement('div');
+      epDiv.className = 'ep-admin';
+      epDiv.innerHTML = `
+        <label>Название<br/><input class="ep-title" data-si="${si}" data-ei="${ei}" value="${ep.title||''}" /></label>
+        <label>Статус<br/><input class="ep-status" data-si="${si}" data-ei="${ei}" value="${ep.status||''}" /></label>
+        <label>Кратко<br/><input class="ep-desc" data-si="${si}" data-ei="${ei}" value="${ep.description||''}" /></label>
+        <label>Текст<br/><textarea class="ep-full" data-si="${si}" data-ei="${ei}">${ep.full||''}</textarea></label>
+        <div class="row"><button class="btn save-ep" data-si="${si}" data-ei="${ei}">Сохранить</button> <button class="btn del-ep" data-si="${si}" data-ei="${ei}">Удалить</button></div>
+      `;
+      epRoot.appendChild(epDiv);
     });
+  });
+
+  // attach events
+  document.querySelectorAll('.s-title').forEach(inp=>{
+    inp.addEventListener('change', e=>{
+      const si = +e.target.dataset.si;
+      const data = getLocal();
+      data.seasons[si].title = e.target.value;
+      saveLocal(data);
+      renderAdmin();
+    });
+  });
+  document.querySelectorAll('.s-locked').forEach(cb=>{
+    cb.addEventListener('change', e=>{
+      const si = +e.target.dataset.si;
+      const data = getLocal();
+      data.seasons[si].locked = e.target.checked;
+      saveLocal(data);
+      renderAdmin();
+    });
+  });
+  document.querySelectorAll('.add-ep').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const si = +e.target.dataset.si;
+      const data = getLocal();
+      data.seasons[si].episodes = data.seasons[si].episodes || [];
+      data.seasons[si].episodes.push({ title: 'Новая серия', status: 'скоро', description:'', full:'' });
+      saveLocal(data);
+      renderAdmin();
+    });
+  });
+  document.querySelectorAll('.del-season').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const si = +e.target.dataset.si;
+      if(!confirm('Удалить сезон?')) return;
+      const data = getLocal();
+      data.seasons.splice(si,1);
+      saveLocal(data);
+      renderAdmin();
+    });
+  });
+  document.querySelectorAll('.save-ep').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const si = +e.target.dataset.si;
+      const ei = +e.target.dataset.ei;
+      const data = getLocal();
+      const title = document.querySelector(`.ep-title[data-si='${si}'][data-ei='${ei}']`).value;
+      const status = document.querySelector(`.ep-status[data-si='${si}'][data-ei='${ei}']`).value;
+      const desc = document.querySelector(`.ep-desc[data-si='${si}'][data-ei='${ei}']`).value;
+      const full = document.querySelector(`.ep-full[data-si='${si}'][data-ei='${ei}']`).value;
+      data.seasons[si].episodes[ei] = { title, status, description: desc, full };
+      saveLocal(data);
+      renderAdmin();
+    });
+  });
+  document.querySelectorAll('.del-ep').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const si = +e.target.dataset.si;
+      const ei = +e.target.dataset.ei;
+      if(!confirm('Удалить серию?')) return;
+      const data = getLocal();
+      data.seasons[si].episodes.splice(ei,1);
+      saveLocal(data);
+      renderAdmin();
+    });
+  });
 }
 
-function editEpisode(i) {
-    editingIndex = i;
-    document.getElementById("title").value = episodes[i].title;
-    document.getElementById("description").value = episodes[i].description;
-    document.getElementById("full").value = episodes[i].full;
-}
+document.getElementById('loginBtn').addEventListener('click', ()=>{
+  const pw = document.getElementById('pw').value;
+  if(pw === ADMIN_PASS){
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('adminUI').classList.remove('hidden');
+    ensureDefault().then(()=> renderAdmin());
+  } else {
+    document.getElementById('loginMsg').textContent = 'Неверный пароль';
+  }
+});
 
-function deleteEpisode(i) {
-    if (!confirm("Удалить серию?")) return;
-    episodes.splice(i, 1);
-    saveToFile();
-}
+document.getElementById('addSeason').addEventListener('click', ()=>{
+  const data = getLocal();
+  data.seasons = data.seasons || [];
+  data.seasons.push({ title: 'Новый сезон', locked: true, episodes: [] });
+  saveLocal(data);
+  renderAdmin();
+});
 
-function saveEpisode() {
-    const ep = {
-        title: document.getElementById("title").value,
-        description: document.getElementById("description").value,
-        full: document.getElementById("full").value
-    };
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const data = JSON.stringify(getLocal(), null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'seasons_export.json'; a.click();
+  URL.revokeObjectURL(url);
+});
 
-    if (editingIndex !== null) {
-        episodes[editingIndex] = ep;
-        editingIndex = null;
-    } else {
-        episodes.push(ep);
-    }
+document.getElementById('importBtn').addEventListener('click', ()=> {
+  document.getElementById('importFile').click();
+});
+document.getElementById('importFile').addEventListener('change', (ev)=>{
+  const f = ev.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=> {
+    try{
+      const data = JSON.parse(reader.result);
+      saveLocal(data);
+      renderAdmin();
+      alert('Импорт завершён');
+    }catch(e){ alert('Ошибка формата файла'); }
+  };
+  reader.readAsText(f);
+});
 
-    saveToFile();
-}
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(confirm('Удалить данные localStorage?')){ localStorage.removeItem(LOCAL_KEY); alert('Данные удалены'); location.reload(); }
+});
 
-function saveToFile() {
-    const data = JSON.stringify(episodes, null, 4);
-    const blob = new Blob([data], { type: "application/json" });
-
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "episodes.json";
-    a.click();
-
-    alert("Сохранено! Загрузите новый episodes.json на сайт");
-    renderList();
-}
+// init default into localStorage if not exists
+ensureDefault();
 </script>
-
 </body>
 </html>
-
