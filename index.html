@@ -1,43 +1,75 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Сломанные судьбы</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Сломанные судьбы — сезоны</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<header>
+  <header class="site-header">
     <h1>Сломанные судьбы</h1>
-    <p class="subtitle">Список серий</p>
-</header>
+    <nav>
+      <a href="index.html">Сезоны</a>
+      <a href="admin.html">Админ</a>
+    </nav>
+  </header>
 
-<main id="episodes"></main>
+  <main class="container">
+    <h2 class="section-title">Выберите сезон</h2>
+    <div id="seasonsGrid" class="seasons-grid"></div>
+    <p class="muted">Сезоны 3 и 4 закрыты пока что</p>
+  </main>
 
 <script>
-async function loadEpisodes() {
-    const response = await fetch("episodes.json");
-    const episodes = await response.json();
+const LOCAL_KEY = 'slomannye_seasons_v1';
+const DEFAULT_JSON = 'seasons.json';
 
-    const container = document.getElementById("episodes");
-    container.innerHTML = "";
-
-    episodes.forEach(ep => {
-        const block = document.createElement("div");
-        block.className = "episode";
-
-        block.innerHTML = `
-            <h2>${ep.title}</h2>
-            <p class="desc">${ep.description}</p>
-            <button onclick="alert(\`${ep.full}\`)">Читать</button>
-        `;
-
-        container.appendChild(block);
-    });
+function showLockedNotice(){
+  alert('Сезон недоступен. Он выйдет позже.');
 }
 
-loadEpisodes();
-</script>
+async function loadData(){
+  // сначала пробуем localStorage
+  const raw = localStorage.getItem(LOCAL_KEY);
+  if(raw){
+    try{ return JSON.parse(raw); }catch(e){}
+  }
+  // если нет localStorage пробуем загрузить файл
+  try{
+    const res = await fetch(DEFAULT_JSON);
+    if(res.ok){
+      const json = await res.json();
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(json));
+      return json;
+    }
+  }catch(e){}
+  // пустая структура
+  return { seasons: [] };
+}
 
+function createSeasonCard(s, idx){
+  const div = document.createElement('div');
+  div.className = 'season-card';
+  div.innerHTML = `
+    <h3>${s.title}</h3>
+    <p class="season-meta">Сезон ${idx+1} • эпизодов ${ (s.episodes||[]).length }</p>
+    <div class="season-actions">
+      <a class="btn" href="season.html?i=${idx}" ${s.locked? 'onclick="event.preventDefault();showLockedNotice();"' : ''}>Открыть</a>
+    </div>
+    ${s.locked ? '<div class="lock">🔒 Закрыт</div>' : ''}
+  `;
+  return div;
+}
+
+(async function init(){
+  const data = await loadData();
+  const grid = document.getElementById('seasonsGrid');
+  grid.innerHTML = '';
+  (data.seasons || []).forEach((s, i)=>{
+    grid.appendChild(createSeasonCard(s,i));
+  });
+})();
+</script>
 </body>
 </html>
