@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Сезон — Сломанные судьбы</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>Сломанные судьбы</h1>
+    <nav>
+      <a href="index.html">Сезоны</a>
+      <a href="admin.html">Админ</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div id="content"></div>
+  </main>
+
+  <div id="reader" class="modal hidden">
+    <div class="modal-content">
+      <button id="closeReader" class="btn close">Закрыть</button>
+      <h2 id="readTitle"></h2>
+      <div id="readBody" class="reader-body"></div>
+    </div>
+  </div>
+
+<script>
+const LOCAL_KEY = 'slomannye_seasons_v1';
+const DEFAULT_JSON = 'seasons.json';
+
+function getQueryParam(name){
+  const url = new URL(location.href);
+  return url.searchParams.get(name);
+}
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function loadData(){
+  const raw = localStorage.getItem(LOCAL_KEY);
+  if(raw){
+    try{ return JSON.parse(raw); }catch(e){}
+  }
+  try{
+    const res = await fetch(DEFAULT_JSON);
+    if(res.ok){
+      const json = await res.json();
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(json));
+      return json;
+    }
+  }catch(e){}
+  return { seasons: [] };
+}
+
+function openReader(ep){
+  document.getElementById('readTitle').textContent = ep.title || '';
+  document.getElementById('readBody').innerHTML = escapeHtml(ep.full || '').replace(/\n/g,'<br/>');
+  document.getElementById('reader').classList.remove('hidden');
+}
+document.getElementById('closeReader').addEventListener('click', ()=> {
+  document.getElementById('reader').classList.add('hidden');
+});
+
+(async function init(){
+  const idx = parseInt(getQueryParam('i') || '0',10);
+  const data = await loadData();
+  const seasons = data.seasons || [];
+  const container = document.getElementById('content');
+
+  if(!seasons[idx]){
+    container.innerHTML = '<p>Сезон не найден</p>';
+    return;
+  }
+  const season = seasons[idx];
+  if(season.locked){
+    container.innerHTML = '<h2>'+escapeHtml(season.title)+'</h2><p class="muted">Сезон недоступен. Он выйдет позже.</p>';
+    return;
+  }
+
+  let html = '<h2>'+escapeHtml(season.title)+'</h2>';
+  html += '<div class="episodes-list">';
+  (season.episodes||[]).forEach((ep,i)=>{
+    html += '<div class="episode"><h3>'+escapeHtml(ep.title)+'</h3><p class="desc">'+escapeHtml(ep.description)+'</p><div class="ep-actions"><button class="btn readBtn" data-i="'+i+'">Читать</button></div></div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+
+  document.querySelectorAll('.readBtn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const i = +b.dataset.i;
+      openReader(season.episodes[i]);
+    });
+  });
+})();
+</script>
+</body>
+</html>
