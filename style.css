@@ -81,9 +81,20 @@ textarea, input, select {
 #episodes {
     padding: 20px;
     }
+
+}
 .episode-text {
     white-space: normal;
     font-size: 18px;
-    line-height: 1.4;
-    margin-bottom: 20px;
+    line-height: 1.5;
+    margin-top: 10px;
 }
+
+.episode-box {
+    background: rgba(0, 255, 100, 0.1);
+    border: 1px solid #00ff66;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
