@@ -80,4 +80,10 @@ textarea, input, select {
 
 #episodes {
     padding: 20px;
+    }
+.episode-text {
+    white-space: normal;
+    font-size: 18px;
+    line-height: 1.4;
+    margin-bottom: 20px;
 }
